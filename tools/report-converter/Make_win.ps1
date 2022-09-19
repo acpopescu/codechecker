@@ -19,8 +19,8 @@ $CODEMIRROR_DIR = "$VENDOR_DIR\codemirror"
 
 function build()
 {
-	mkdir -p $VENDOR_DIR
-	mkdir -p $CODEMIRROR_DIR
+	mkdir -Force -Path  $VENDOR_DIR
+	mkdir -Force -Path  $CODEMIRROR_DIR
     curl -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.js -OutFile  $CODEMIRROR_DIR\codemirror.min.js
 	curl -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.css -OutFile  $CODEMIRROR_DIR\codemirror.min.css 
     curl -UseBasicParsing  -Uri https://raw.githubusercontent.com/codemirror/CodeMirror/master/LICENSE -OutFile  $CODEMIRROR_DIR\codemirror.LICENSE 

@@ -19,9 +19,9 @@ $CC_ANALYZER = "$ROOT\analyzer"
 
 function package_dir_structure()
 {
-	mkdir -p $BUILD_DIR 
-	mkdir -p $CC_BUILD_BIN_DIR 
-	mkdir -p $CC_BUILD_LIB_DIR
+	mkdir  -Force -Path $BUILD_DIR 
+	mkdir  -Force -Path $CC_BUILD_BIN_DIR 
+	mkdir  -Force -Path $CC_BUILD_LIB_DIR
 }
 
 function package_tu_collector()
