@@ -1,0 +1,34 @@
+package:
+  name: codechecker
+  version: 6.20.0
+
+source:
+  path: ./
+   
+requirements:
+  build:
+    - python
+    - setuptools
+    - lxml==4.7.1
+    - portalocker==2.2.1
+    - psutil==5.8.0
+    - PyYAML==5.4.1
+    - mypy_extensions==0.4.3
+    - sqlalchemy==1.3.23
+    - alembic==1.5.5
+    - thrift==0.13.0
+    - gitpython==3.1.11
+    - conda-build
+
+  run:
+    - python
+    - mypy_extensions
+
+test:
+  imports:
+    - codechecker_report_converter
+    - codechecker_merge_clang_extdef_mappings
+    - tu_collector
+
+about:
+  home:

@@ -43,6 +43,11 @@ function package_dir_structure()
 	mkdir -Force -Path  $CC_BUILD_LIB_DIR
 
 }
+function clean_package_web()
+{
+    Remove-Item -Force -Recurse "$CC_SERVER\vue-cli\dist"
+    Remove-Item -Force -Recurse "$CC_SERVER\vue-cli\node_modules"
+}
 function build_dist_dir()
 {
     if($BUILD_UI_DIST)

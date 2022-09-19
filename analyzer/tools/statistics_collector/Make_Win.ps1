@@ -19,3 +19,10 @@ function build()
 {
 	python setup.py build --build-purelib $STATISTICS_COLLECTOR_DIR
 }
+
+function clean()
+{
+    Remove-Item -Force -Recurse $BUILD_DIR
+	Remove-Item -Force -Recurse .\dist
+	Remove-Item -Force -Recurse .\statistics_collector.egg-info
+}

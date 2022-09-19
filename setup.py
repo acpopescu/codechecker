@@ -61,6 +61,7 @@ def init_packages():
     """ Find and initialize the list of packages. """
     global packages
     packages.extend(setuptools.find_packages(where=lib_dir))
+    #packages.extend(setuptools.find_packages())
 
 
 ld_logger_src_dir_path = \

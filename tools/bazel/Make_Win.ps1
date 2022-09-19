@@ -15,3 +15,9 @@ function build()
 {
 	python setup.py build --build-purelib $COMPILE_COMMANDS_DIR
 }
+
+function clean()
+{
+	Remove-Item -Force -Recurse $BUILD_DIR
+	Remove-Item -Force -Recurse .\bazel_compile_commands.egg-info
+}

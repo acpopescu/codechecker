@@ -82,3 +82,12 @@ function package_analyzer()
     package_statistics_collector
     package_bazel_compile_commands
 }
+
+function clean_package_analyzer()
+{
+	make_wrapper $null $ROOT\tools\tu_collector "clean"
+	make_wrapper $null $CC_ANALYZER\tools\merge_clang_extdef_mappings "clean"
+	make_wrapper $null $CC_TOOLS\report-converter "clean"
+	make_wrapper $null $CC_ANALYZER\tools\statistics_collector "clean"
+	make_wrapper $null $ROOT\tools\bazel "clean"
+}

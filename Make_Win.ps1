@@ -34,13 +34,30 @@ mkdir -Force -Path  $CC_BUILD_LIB_DIR
 
 cp -Force -Path scripts\gerrit_changed_files_to_skipfile.py $CC_BUILD_BIN_DIR
 
-function make_pip_package()
+function make_dist()
 {
+	make_clean	
+	$Global:BUILD_DIR="$CURRENT_DIR\build_dist"
+	make_pip_package	
+	python setup.py install
+}
+
+function make_clean()
+{
+	make_wrapper $BUILD_DIR $CC_ANALYZER "clean_package_analyzer"
+	make_wrapper $BUILD_DIR $CC_WEB "clean_package_web"
+	
+	Remove-Item -Recurse -Force $BUILD_DIR
+	Remove-Item -Recurse -Force "$CURRENT_DIR\build"
+	Remove-Item -Recurse -Force "$CURRENT_DIR\build_dist"
+}
+function make_pip_package()
+{	
+	echo "building"
 	make_wrapper $BUILD_DIR $CC_ANALYZER "package_analyzer"
 	make_wrapper $BUILD_DIR $CC_WEB "package_web"
-
-	return
-	
+	#
+	#
     # Copy libraries.
 	mkdir -Force -Path  $CC_BUILD_LIB_DIR\codechecker 
 	cp -Force -Recurse $ROOT\codechecker_common $CC_BUILD_LIB_DIR 
@@ -48,12 +65,13 @@ function make_pip_package()
 	cp -Force -Recurse $CC_WEB\codechecker_web $CC_BUILD_LIB_DIR 
 	cp -Force -Recurse $CC_SERVER\codechecker_server $CC_BUILD_LIB_DIR 
 	cp -Force -Recurse $CC_CLIENT\codechecker_client $CC_BUILD_LIB_DIR
-
+	
 	# Copy config files and extend 'version.json' file with git information.
 	cp -Force -Recurse $ROOT\config $CC_BUILD_DIR 
 	cp -Force -Recurse $CC_ANALYZER\config\* $CC_BUILD_DIR\config 
 	cp -Force -Recurse $CC_WEB\config\* $CC_BUILD_DIR\config 
 	cp -Force -Recurse $CC_SERVER\config\* $CC_BUILD_DIR\config 
+		
 	python .\scripts\build\extend_version_file.py -r $ROOT $CC_BUILD_DIR\config\analyzer_version.json $CC_BUILD_DIR\config\web_version.json
 
 	python .\scripts\build\create_commands.py -b $BUILD_DIR `
