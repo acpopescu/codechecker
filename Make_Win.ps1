@@ -101,4 +101,13 @@ function make_pip_dev_package()
 	ln  $CC_CLIENT\codechecker_client $CC_BUILD_LIB_DIR
 }
 
+function run_dev_servers_after_make()
+{
+	pip3 install $CC_WEB\api\py\codechecker_api\dist\codechecker_api.tar.gz
+	pip3 install $CC_WEB\api\py\codechecker_api_shared\dist\codechecker_api_shared.tar.gz
+	Push-Location $CC_BUILD_BIN_DIR
+	invoke-expression 'cmd /c start powershell -Command { python .\CodeChecker server --verbose debug }'
+	Pop-Location
+}
+
 

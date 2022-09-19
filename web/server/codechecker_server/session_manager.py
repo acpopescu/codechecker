@@ -61,7 +61,7 @@ def get_worker_processes(scfg_dict):
     Return 'worker_processes' field from the config dictionary or returns the
     default value if this field is not set or the value is negative.
     """
-    default = os.cpu_count()
+    default = 1 #os.cpu_count()
     worker_processes = scfg_dict.get('worker_processes', default)
 
     if worker_processes < 0:

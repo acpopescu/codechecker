@@ -73,11 +73,11 @@ module.exports = {
         exclude: [/node_modules\/(?!vuetify)/],
         options: {
           presets: [
-            ["@babel/env", {
+            ["@babel/preset-env", {
               useBuiltIns: "usage",
               corejs: 3,
               targets: {
-                "node": "current"
+                "edge": "104"
               }
 
             }]
