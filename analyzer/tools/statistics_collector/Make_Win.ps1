@@ -22,7 +22,7 @@ function build()
 
 function clean()
 {
-    Remove-Item -Force -Recurse $BUILD_DIR
-	Remove-Item -Force -Recurse .\dist
-	Remove-Item -Force -Recurse .\statistics_collector.egg-info
+    Remove-Item -Force -Recurse -ErrorAction Ignore $BUILD_DIR
+	Remove-Item -Force -Recurse -ErrorAction Ignore .\dist
+	Remove-Item -Force -Recurse -ErrorAction Ignore .\statistics_collector.egg-info
 }

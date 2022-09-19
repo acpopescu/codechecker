@@ -9,6 +9,6 @@ function make_wrapper($builddir, $directory, $entry_function)
 
 function ln([switch]$sf, $target, $link)
 {
-    Remove-Item -Force $link
+    Remove-Item -Force -ErrorAction Ignore $link
 	cmd /c mklink $link $target
 }

@@ -3,7 +3,7 @@
 $CURRENT_DIR = Get-Location
 if ( $null -eq $BUILD_DIR) 
 {
-    $BUILD_DIR =  "$CURRENT_DIR\build"
+    $BUILD_DIR =  "$CURRENT_DIR\build_dist"
 }
 
 $CC_BUILD_DIR = "$BUILD_DIR\CodeChecker"
@@ -37,9 +37,7 @@ cp -Force -Path scripts\gerrit_changed_files_to_skipfile.py $CC_BUILD_BIN_DIR
 function make_dist()
 {
 	make_clean	
-	$Global:BUILD_DIR="$CURRENT_DIR\build_dist"
 	make_pip_package	
-	python setup.py install
 }
 
 function make_clean()
@@ -47,13 +45,12 @@ function make_clean()
 	make_wrapper $BUILD_DIR $CC_ANALYZER "clean_package_analyzer"
 	make_wrapper $BUILD_DIR $CC_WEB "clean_package_web"
 	
-	Remove-Item -Recurse -Force $BUILD_DIR
-	Remove-Item -Recurse -Force "$CURRENT_DIR\build"
-	Remove-Item -Recurse -Force "$CURRENT_DIR\build_dist"
+	Remove-Item -Recurse -Force -ErrorAction Ignore $BUILD_DIR
+	Remove-Item -Recurse -Force -ErrorAction Ignore "$CURRENT_DIR\build"
+	Remove-Item -Recurse -Force -ErrorAction Ignore "$CURRENT_DIR\build_dist"
 }
 function make_pip_package()
 {	
-	echo "building"
 	make_wrapper $BUILD_DIR $CC_ANALYZER "package_analyzer"
 	make_wrapper $BUILD_DIR $CC_WEB "package_web"
 	#
@@ -89,12 +86,12 @@ function make_pip_package()
 function make_pip_dev_package()
 {
     make_pip_package
-    rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_common 
-	rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_analyzer 
-	rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_web 
-	rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_server 
-	rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_report_converter 
-	rm  -Force -Recurse  $CC_BUILD_LIB_DIR\codechecker_client
+    rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_common 
+	rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_analyzer 
+	rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_web 
+	rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_server 
+	rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_report_converter 
+	rm  -Force -Recurse -ErrorAction Ignore  $CC_BUILD_LIB_DIR\codechecker_client
 
 	ln  $ROOT\codechecker_common $CC_BUILD_LIB_DIR 
 	ln  $CC_ANALYZER\codechecker_analyzer $CC_BUILD_LIB_DIR 

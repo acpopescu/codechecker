@@ -18,6 +18,6 @@ function build()
 
 function clean()
 {
-	Remove-Item -Force -Recurse $BUILD_DIR
-	Remove-Item -Force -Recurse .\bazel_compile_commands.egg-info
+	Remove-Item -Force -Recurse -ErrorAction Ignore $BUILD_DIR
+	Remove-Item -Force -Recurse -ErrorAction Ignore .\bazel_compile_commands.egg-info
 }

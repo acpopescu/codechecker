@@ -85,9 +85,9 @@ function package_analyzer()
 
 function clean_package_analyzer()
 {
-	make_wrapper $null $ROOT\tools\tu_collector "clean"
-	make_wrapper $null $CC_ANALYZER\tools\merge_clang_extdef_mappings "clean"
-	make_wrapper $null $CC_TOOLS\report-converter "clean"
-	make_wrapper $null $CC_ANALYZER\tools\statistics_collector "clean"
-	make_wrapper $null $ROOT\tools\bazel "clean"
+	make_wrapper $null $ROOT\tools\tu_collector clean
+	make_wrapper $null $CC_ANALYZER\tools\merge_clang_extdef_mappings clean
+	make_wrapper $null $CC_TOOLS\report-converter clean
+	make_wrapper $null $CC_ANALYZER\tools\statistics_collector clean
+	make_wrapper $null $ROOT\tools\bazel clean
 }

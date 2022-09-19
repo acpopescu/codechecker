@@ -45,8 +45,8 @@ function package_dir_structure()
 }
 function clean_package_web()
 {
-    Remove-Item -Force -Recurse "$CC_SERVER\vue-cli\dist"
-    Remove-Item -Force -Recurse "$CC_SERVER\vue-cli\node_modules"
+    Remove-Item -Force -Recurse -ErrorAction Ignore "$CC_SERVER\vue-cli\dist"
+    Remove-Item -Force -Recurse -ErrorAction Ignore "$CC_SERVER\vue-cli\node_modules"
 }
 function build_dist_dir()
 {
@@ -79,7 +79,7 @@ function package_web()
 	{
 		Push-Location server\vue-cli 
 		npm install 
-		rm -Force -Recurse $DIST_DIR
+		rm -Force -Recurse -ErrorAction Ignore $DIST_DIR
 		Pop-Location
 	}		
 

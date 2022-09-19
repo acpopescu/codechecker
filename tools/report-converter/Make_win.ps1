@@ -31,6 +31,6 @@ function build()
 
 function clean()
 {
-	Remove-Item -Force -Recurse $BUILD_DIR
-	Remove-Item -Force -Recurse .\report_converter.egg-info
+	Remove-Item -Force -Recurse -ErrorAction Ignore $BUILD_DIR
+	Remove-Item -Force -Recurse -ErrorAction Ignore .\report_converter.egg-info
 }
