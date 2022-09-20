@@ -4,6 +4,12 @@ This is an experimental fork of Code Checker, made to build on Windows and provi
 
 This is provided as is and not suited for a production environment and it's WIP.
 
+# Thanks
+
+Thanks for https://stackoverflow.com, https://www.google.com, https://docs.microsoft.com/ without which this port wouldn't have been possible
+
+
+
 # How to build
 
 1. Install miniconda (works with full anaconda, I really recommend to use miniconda and then environments to isolate needs per project or chaos ensues)
