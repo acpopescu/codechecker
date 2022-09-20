@@ -1,5 +1,6 @@
 {
   "max_run_count": null,
+  "worker_processes": 1,
   "store": {
     "analysis_statistics_dir": null,
     "limit": {
