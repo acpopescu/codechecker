@@ -1,6 +1,6 @@
 # NOTICE
 
-This is an experimental fork of Code Checker, made to build on Windows and provide a conda package. Does not support building the compilation db, or build logging. 
+This is an experimental fork of Code Checker that builds a conda package on win64. Does not support build logging. 
 
 This is provided as is and not suited for a production environment and it's WIP.
 
@@ -12,9 +12,9 @@ Thanks for https://stackoverflow.com, https://www.google.com, https://docs.micro
 
 # How to build
 
-1. Install miniconda (works with full anaconda, I really recommend to use miniconda and then environments to isolate needs per project or chaos ensues)
-2. Install nodejs: choco install nodejs --version 16.17.0
-3. Start a miniconda powershell
+1. Install miniconda (works with full anaconda too, I prefer to use miniconda)
+2. Install nodejs: `choco install nodejs --version 16.17.0`
+3. Start Anaconda Powershell
 
 ## To run locally and debug the build_dist directory
 4. cd to source directory. You may need to remove the old one `conda env remove -n codechecker-build` if something fails
@@ -68,4 +68,4 @@ INFO :: The inputs making up the hashes for the built packages are as follows:
 - address the known issues
 
 # How it was done
-Literally translating hand-makefiles into Windows Powershell scripts. Why? Because Conda is the de facto python for windows, period. No mingw shenaningans for me, and it would have taken me JUST as much to hack an environment around...
+Literally translating hand-makefiles into Windows Powershell scripts and looking on Stack Overflow on how to fix build issues. Why? Because Conda is the de facto python for windows, period. No mingw shenaningans for me, and it would have taken me JUST as much to hack an environment around...
