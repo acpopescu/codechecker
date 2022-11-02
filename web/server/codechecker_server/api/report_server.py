@@ -19,6 +19,7 @@ import stat
 import time
 import zlib
 
+from copy import deepcopy
 from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Set, Tuple
@@ -371,6 +372,8 @@ def filter_open_reports_in_tags(results, run_ids, tag_ids):
     """
     Adding filters on "results" query which filter on open reports in
     given runs and tags.
+    For further information see the documentation of
+    filter_open_reports_in_tags_old().
     """
 
     if run_ids:
@@ -381,6 +384,36 @@ def filter_open_reports_in_tags(results, run_ids, tag_ids):
             RunHistory, RunHistory.run_id == Report.run_id) \
             .filter(RunHistory.id.in_(tag_ids)) \
             .filter(get_open_reports_date_filter_query())
+
+    return results
+
+
+def filter_open_reports_in_tags_old(results, run_ids, tag_ids):
+    """
+    Adding filters on "results" query which filter on open reports in
+    given runs and tags.
+
+    This function is almost the same as filter_open_reports_in_tags() except
+    that is uses get_open_reports_date_filter_query_old() for filtering open
+    reports on a given date. This function is duplicated, because we didn't
+    want to add an extra parameter for this function, but express the fact that
+    an old client (i.e. API version before 6.50) should be given a different
+    result set.
+    This function and its duplicate are used in getDiffResultHash() which
+    should behave differently when called by an old client. The reasons of this
+    different behavior is described a previous commit
+    (f6d0fedaf14b583df7bd26078a8a22b557be57c6) where another case of the issue
+    was fixed.
+    """
+
+    if run_ids:
+        results = results.filter(Report.run_id.in_(run_ids))
+
+    if tag_ids:
+        results = results.outerjoin(
+            RunHistory, RunHistory.run_id == Report.run_id) \
+            .filter(RunHistory.id.in_(tag_ids)) \
+            .filter(get_open_reports_date_filter_query_old())
 
     return results
 
@@ -516,6 +549,16 @@ def get_open_reports_date_filter_query(tbl=Report, date=RunHistory.time):
     return and_(tbl.detected_at <= date,
                 or_(tbl.fixed_at.is_(None),
                     tbl.fixed_at > date))
+
+
+def get_open_reports_date_filter_query_old(tbl=Report, date=RunHistory.time):
+    """ Get open reports date filter.
+
+    This function is a dupliation of get_open_reports_date_filter_query().
+    For the reson of duplication see the documentation of
+    filter_open_reports_in_tags_old().
+    """
+    return tbl.detected_at <= date
 
 
 def get_diff_bug_id_query(session, run_ids, tag_ids, open_reports_date):
@@ -1619,12 +1662,13 @@ class ThriftRequestHandler:
                     base_hashes = base_hashes.filter(
                         Report.detection_status.notin_(skip_statuses_str),
                         Report.fixed_at.is_(None))
+                    base_hashes = filter_open_reports_in_tags(
+                        base_hashes, run_ids, tag_ids)
                 else:
                     base_hashes = base_hashes.filter(
                         Report.detection_status.notin_(skip_statuses_str))
-
-                base_hashes = \
-                    filter_open_reports_in_tags(base_hashes, run_ids, tag_ids)
+                    base_hashes = filter_open_reports_in_tags_old(
+                        base_hashes, run_ids, tag_ids)
 
                 if self._product.driver_name == 'postgresql':
                     new_hashes = select([func.unnest(report_hashes)
@@ -1655,12 +1699,13 @@ class ThriftRequestHandler:
                     results = results.filter(or_(
                         Report.bug_id.notin_(report_hashes),
                         Report.fixed_at.isnot(None)))
+                    results = filter_open_reports_in_tags(
+                        results, run_ids, tag_ids)
                 else:
                     results = results.filter(
                         Report.bug_id.notin_(report_hashes))
-
-                results = \
-                    filter_open_reports_in_tags(results, run_ids, tag_ids)
+                    results = filter_open_reports_in_tags_old(
+                        results, run_ids, tag_ids)
 
                 return [res[0] for res in results]
 
@@ -1673,12 +1718,13 @@ class ThriftRequestHandler:
                         .filter(Report.detection_status.notin_(
                             skip_statuses_str)) \
                         .filter(Report.fixed_at.is_(None))
+                    results = filter_open_reports_in_tags(
+                        results, run_ids, tag_ids)
                 else:
                     results = results.filter(
                         Report.detection_status.notin_(skip_statuses_str))
-
-                results = \
-                    filter_open_reports_in_tags(results, run_ids, tag_ids)
+                    results = filter_open_reports_in_tags_old(
+                        results, run_ids, tag_ids)
 
                 return [res[0] for res in results]
 
@@ -2112,31 +2158,49 @@ class ThriftRequestHandler:
     @timeit
     def getReviewStatusRules(self, rule_filter, sort_mode, limit, offset):
         self.__require_view()
+        if not sort_mode:
+            sort_mode = ReviewStatusRuleSortMode(
+                type=ReviewStatusRuleSortType.DATE,
+                ord=Order.DESC)
 
         result = []
-        with DBSession(self._Session) as session:
-            if not sort_mode:
-                sort_mode = ReviewStatusRuleSortMode(
-                    type=ReviewStatusRuleSortType.DATE,
-                    ord=Order.DESC)
 
-            q = get_rs_rule_query(session, rule_filter, sort_mode)
+        # To avoid modifiying the collection due to chunking
+        rule_filter_copy = deepcopy(rule_filter)
+
+        def getRules(reportHashes=None):
+            if rule_filter and reportHashes:
+                rule_filter_copy.reportHashes = reportHashes
+            q = get_rs_rule_query(session, rule_filter_copy, sort_mode)
 
             if limit:
                 q = q.limit(limit).offset(offset)
 
-        for review_status, associated_report_count in q:
-            result.append(ReviewStatusRule(
-                reportHash=review_status.bug_hash,
-                reviewData=create_review_data(
-                    review_status.status,
-                    review_status.message,
-                    review_status.author,
-                    review_status.date,
-                    False),
-                associatedReportCount=associated_report_count))
+            for review_status, associated_report_count in q:
+                result.append(ReviewStatusRule(
+                    reportHash=review_status.bug_hash,
+                    reviewData=create_review_data(
+                        review_status.status,
+                        review_status.message,
+                        review_status.author,
+                        review_status.date,
+                        False),
+                    associatedReportCount=associated_report_count))
+            return result
 
-        return result
+        with DBSession(self._Session) as session:
+            if rule_filter and rule_filter.reportHashes:
+                # Diffing with a large ammount of report hashes passed in the
+                # filter (60K) caused a hanging report diffing.
+                # The probable cause of this is the ILIKE matching in the
+                # underlying logic. Chunking the request solves this issue.
+                for hash_chunk in util.chunks(
+                        rule_filter.reportHashes,
+                        SQLITE_MAX_VARIABLE_NUMBER):
+                    getRules(hash_chunk)
+                return result
+            else:
+                return getRules()
 
     @exc_to_thrift_reqfail
     @timeit
@@ -2489,20 +2553,38 @@ class ThriftRequestHandler:
         self.__require_view()
         with DBSession(self._Session) as session:
             res = defaultdict(lambda: defaultdict(str))
-            for lines_in_file in lines_in_files_requested:
-                if lines_in_file.fileId is None:
-                    LOG.warning("File content requested without a fileId.")
-                    LOG.warning(lines_in_file)
-                    continue
-                sourcefile = session.query(File).get(lines_in_file.fileId)
-                cont = session.query(FileContent).get(sourcefile.content_hash)
-                lines = zlib.decompress(
-                    cont.content).decode('utf-8', 'ignore').split('\n')
-                for line in lines_in_file.lines:
+
+            # This will contain all the lines for the given fileId
+            contents_to_file_id = defaultdict(list)
+            # The goal of the chunking is not for achieving better performace
+            # but to be compatible with SQLITE dbms with larger report counts,
+            # with larger report data.
+            for chunk in util.chunks(
+                    lines_in_files_requested, SQLITE_MAX_VARIABLE_NUMBER):
+                contents = session.query(FileContent.content, File.id) \
+                        .join(
+                            File,
+                            FileContent.content_hash == File.content_hash) \
+                        .filter(File.id.in_(
+                                [line.fileId if line.fileId is not None
+                                    else LOG.warning(
+                                        f"File content "
+                                        "requested without fileId {l}")
+                                    for line in chunk])) \
+                        .all()
+                for content in contents:
+                    lines = zlib.decompress(
+                        content.content).decode('utf-8', 'ignore').split('\n')
+                    contents_to_file_id[content.id] = lines
+
+            for files in lines_in_files_requested:
+                for line in files.lines:
+                    lines = contents_to_file_id[files.fileId]
                     content = '' if len(lines) < line else lines[line - 1]
                     if encoding == Encoding.BASE64:
                         content = convert.to_b64(content)
-                    res[lines_in_file.fileId][line] = content
+                    res[files.fileId][line] = content
+
             return res
 
     @exc_to_thrift_reqfail
