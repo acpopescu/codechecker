@@ -46,6 +46,7 @@ Thanks for https://stackoverflow.com, https://www.google.com, https://docs.micro
         }
 ```
 16. Press F5 and debug!
+17. Store your stuff in the server : `CodeChecker store ./report --name myprojectname --url http://localhost:8001/Default`
 
 
 ## To build the conda package
@@ -84,7 +85,7 @@ INFO :: The inputs making up the hashes for the built packages are as follows:
 
 1. https://clang.llvm.org/docs/analyzer/checkers.html 
 2. use `--saargs myargs.cfg`. The file has all args on the first line, every arg prefixed by "-Xclang" : `-Xclang -analyzer-config -Xclang unix.Malloc:Optimistic=true -Xclang -analyzer-max-loop -Xclang 64 -Xclang -analyzer-inline-max-stack-depth -Xclang 32`
-3. `clang -analyzer-checkers-help`
+3. `clang -analyzer-checker-help`
 
 
 

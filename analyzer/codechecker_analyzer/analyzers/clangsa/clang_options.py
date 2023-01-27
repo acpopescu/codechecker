@@ -9,7 +9,7 @@
 
 
 import os
-from sys import platform
+import platform
 from codechecker_common.logger import get_logger
 
 LOG = get_logger('analyzer')
