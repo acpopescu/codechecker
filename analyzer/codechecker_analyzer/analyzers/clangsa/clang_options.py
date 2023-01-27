@@ -9,7 +9,7 @@
 
 
 import os
-
+from sys import platform
 from codechecker_common.logger import get_logger
 
 LOG = get_logger('analyzer')
@@ -117,6 +117,9 @@ def ctu_mapping(clang_version_info):
         mapping_file = old_mapping_file_name
 
     installed_dir = clang_version_info.installed_dir
+    
+    if platform.system() == 'Windows':
+        tool_name = tool_name+".exe"
 
     tool_path = os.path.join(installed_dir, tool_name)
 

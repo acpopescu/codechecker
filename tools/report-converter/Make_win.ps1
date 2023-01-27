@@ -21,10 +21,10 @@ function build()
 {
 	mkdir -Force -Path  $VENDOR_DIR
 	mkdir -Force -Path  $CODEMIRROR_DIR
-    curl -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.js -OutFile  $CODEMIRROR_DIR\codemirror.min.js
-	curl -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.css -OutFile  $CODEMIRROR_DIR\codemirror.min.css 
-    curl -UseBasicParsing  -Uri https://raw.githubusercontent.com/codemirror/CodeMirror/master/LICENSE -OutFile  $CODEMIRROR_DIR\codemirror.LICENSE 
-	curl -UseBasicParsing  -Uri   $CODEMIRROR/mode/clike/clike.min.js -OutFile  $CODEMIRROR_DIR\clike.min.js 
+    Invoke-WebRequest -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.js -OutFile  $CODEMIRROR_DIR\codemirror.min.js
+	Invoke-WebRequest -UseBasicParsing -Uri $CODEMIRROR/codemirror.min.css -OutFile  $CODEMIRROR_DIR\codemirror.min.css 
+    Invoke-WebRequest -UseBasicParsing  -Uri https://raw.githubusercontent.com/codemirror/CodeMirror/master/LICENSE -OutFile  $CODEMIRROR_DIR\codemirror.LICENSE 
+	Invoke-WebRequest -UseBasicParsing  -Uri   $CODEMIRROR/mode/clike/clike.min.js -OutFile  $CODEMIRROR_DIR\clike.min.js 
 
     python setup.py build --build-purelib  $REPORT_CONVERTER_DIR
 }

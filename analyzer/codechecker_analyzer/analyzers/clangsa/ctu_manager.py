@@ -65,8 +65,9 @@ def merge_clang_extdef_mappings(ctu_dir, ctu_func_map_file,
 
 def generate_ast_cmd(action, config, triple_arch, source):
     """ Command to generate AST (or PCH) file. """
-    ast_joined_path = os.path.join(config.ctu_dir, triple_arch, 'ast',
-                                   os.path.realpath(source)[1:] + '.ast')
+    astRelativePath = ast_dump_path(os.path.realpath(source))
+    
+    ast_joined_path = os.path.join(config.ctu_dir, triple_arch, astRelativePath)
     ast_path = os.path.abspath(ast_joined_path)
     ast_dir = os.path.dirname(ast_path)
 
