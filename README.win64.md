@@ -23,6 +23,7 @@ Thanks for https://stackoverflow.com, https://www.google.com, https://docs.micro
 7. Source the make file `. .\Make_Win.ps1`
 8. Build the sources: `make_pip_package` 
 9. Run the codechecker DEV server `run_dev_servers_after_make`
+10. Point your browser to http://127.0.0.1:8001/ 
 
 ## To build the conda package
 4. Install conda-build : `conda install conda-build`

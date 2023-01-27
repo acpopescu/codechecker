@@ -14,7 +14,7 @@ import os
 import sys
 
 REPO_ROOT = os.path.abspath(os.environ['REPO_ROOT'])
-PKG_ROOT = os.path.join(REPO_ROOT, 'build', 'CodeChecker')
+PKG_ROOT = os.path.join(REPO_ROOT, 'build_dist', 'CodeChecker')
 
 sys.path.append(REPO_ROOT)
 sys.path.append(os.path.join(
